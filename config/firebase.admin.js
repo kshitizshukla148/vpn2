@@ -1,16 +1,18 @@
 // firebase/db.js
+import dotenv from 'dotenv';
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+dotenv.config();
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyDeehiv06M5VrF-1riEX5ivSZ5tfQEwxPU",
-  authDomain: "vpndseducation-5b5bd.firebaseapp.com",
-  projectId: "vpndseducation-5b5bd",
-  storageBucket: "vpndseducation-5b5bd.firebasestorage.app",
-  messagingSenderId: "736364040115",
-  appId: "1:736364040115:web:cb6ff5e598b71b559145c6",
-  measurementId: "G-DRTEM8R3V9"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId:process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // ✅ Initialize app and Firestore once

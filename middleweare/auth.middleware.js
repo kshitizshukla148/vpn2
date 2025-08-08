@@ -1,51 +1,52 @@
 // middleware/auth.middleware.js
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
-import dotenv from 'dotenv'; // Load .env variables
-import jwt from 'jsonwebtoken'; // For verifying JWTs
+dotenv.config();
 
-dotenv.config();                  // Initialize dotenv
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("❌ ERROR: JWT_SECRET not set in environment variables");
+  process.exit(1); // Stop server if no secret
+}
 
-// Use a strong secret from .env, with a fallback
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
+// Example: You can keep a blacklist in memory (for logout)
+const tokenBlacklist = new Set();
+
+export function blacklistToken(token) {
+  tokenBlacklist.add(token);
+}
 
 /**
- * Authentication middleware.
- * 
- * - Checks for `Authorization: Bearer <token>` header
- * - Verifies the token
- * - Attaches decoded payload to `req.user`
- * - Calls next() if valid, else returns 401
+ * Middleware: Verify JWT and authorize user
  */
 export function authenticate(req, res, next) {
-  // 1 Retrieve the Authorization header (or empty string)
-  const authHeader = req.headers.authorization || '';
-
-  // 2️ Extract token if header starts with "Bearer "
-  const token = authHeader.startsWith('Bearer ')
-    ? authHeader.slice(7) // Remove "Bearer " prefix
-    : null;
-
-  // 3️ If no token present, reject access
-  if (!token) {
-    return res
-      .status(401)
-      .json({ error: 'Access denied. No token provided.' });
-  }
-
   try {
-    // 4️ Verify token signature and expiry
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Access denied. Token missing." });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    // If token is in blacklist, block request
+    if (tokenBlacklist.has(token)) {
+      return res.status(401).json({ error: "Token has been logged out." });
+    }
+
+    // Verify token
     const payload = jwt.verify(token, JWT_SECRET);
 
-    // 5️ Attach payload (e.g., { userId, iat, exp }) to request
+    // Attach user payload to request
     req.user = payload;
 
-    // 6️ Token valid → proceed to next middleware/handler
+    // Pass to next middleware
     next();
-
   } catch (err) {
-    // 7️ Token invalid or expired
-    return res
-      .status(401)
-      .json({ error: 'Invalid or expired token.' });
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token expired. Please log in again." });
+    }
+    return res.status(401).json({ error: "Invalid token." });
   }
 }

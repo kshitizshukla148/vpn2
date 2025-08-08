@@ -2,11 +2,11 @@
 // routes/emailTemplate.routes.js
 import express from 'express';
 import {
-  createTemplate,
-  getAllTemplates,
-  getTemplateByKey,
-  updateTemplate,
-  deleteTemplate
+    createTemplate,
+    deleteTemplate,
+    getAllTemplates,
+    getTemplateByKey,
+    updateTemplate
 } from '../controllers/emailTemplate.controller.js';
 
 const router = express.Router();
