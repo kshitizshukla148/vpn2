@@ -1,4 +1,23 @@
 # 📝Happy coding! 🚀
+# Node.js + Express Authentication Project
+
+This is a simple Node.js and Express-based authentication project with login, registration, and logout functionality.  
+It also uses Firebase Firestore for storing user data.
+
+---
+
+## Features
+- User Registration
+- User Login
+- Secure Password Hashing (bcrypt)
+- JWT-based Authentication
+- Logout (Token Blacklisting / Expiry)
+- Firestore Database Integration
+
+---
+
+## Project Structure
+
 
 # VPN Academy Backend
 
@@ -14,6 +33,7 @@ It follows a clean, modular architecture with:
 - **Models**: Mongoose schemas + utilities
 - **Middleware**: Authentication and error handling
 
+
 ---
 
 ## 📁 Project Structure
@@ -21,22 +41,26 @@ It follows a clean, modular architecture with:
 ```text
 project-root/
 ├── controllers/             # Business logic for each feature
-│   ├── register.controller.js   # Handles /api/register
-│   ├── login.controller.js      # Handles /login, /forgot-password, /reset-password
+│   ├── register.controller.js       # Handles /api/register
+│   ├── login.controller.js          # Handles /login, /forgot-password, /reset-password
 │   ├── emailTemplate.controller.js  # CRUD for email templates
-│   └── lecture.controller.js    # CRUD for lectures + YouTube ID parsing
-├── middleware/              # Custom middleware
-│   └── auth.middleware.js       # JWT validation
+│   └── lecture.controller.js        # CRUD for lectures + YouTube ID parsing
+├── middleweare/             # Custom middleware (typo in folder name)
+│   ├── auth.middleware.js           # JWT validation
+│   ├── hash.password.js             # Password hashing
+│   ├── permission.js                # Permission checks
+│   └── validate.password.js         # Password validation
 ├── models/                  # Mongoose schemas & utilities
-│   ├── user.model.js            # User schema + password hashing
-│   ├── emailTemplates.model.js  # Email template schema + mailer
-│   └── lecture.model.js         # Lecture schema with videoUrl & youtubeId
+│   ├── user.model.js                # User schema + password hashing
+│   ├── emailTemplates.model.js      # Email template schema + mailer
+│   ├── mail.server.model.js         # Mail server config
+│   └── lecture.model.js             # Lecture schema with videoUrl & youtubeId
 ├── routes/                  # Route definitions & validation
-│   ├── register.route.js        # /api/register
-│   ├── login.routes.js          # /login, /forgot-password, /reset-password
-│   ├── emailTemplate.routes.js  # /email endpoints
-│   └── lecture.routes.js        # /lectures endpoints
-├── app.js (or index.js)     # Express app setup & mounting
+│   ├── register.routes.js           # /api/register
+│   ├── login.routes.js              # /login, /forgot-password, /reset-password
+│   ├── emailTemplate.routes.js      # /email endpoints
+│   └── lecture.routes.js            # /lectures endpoints
+├── index.js                 # Express app setup & mounting
 ├── .env                     # Environment variables (DB URI, JWT_SECRET, etc.)
 ├── package.json             # Dependencies & scripts
 └── README.md                # This file
@@ -194,16 +218,23 @@ The server will be available at `http://localhost:4000` (or your specified `PORT
 
 ### Protected (JWT required)
 
-| Method | Route           | Description               |
-| ------ | --------------- | ------------------------- |
-| GET    | `/email`        | List email templates      |
-| POST   | `/email`        | Create new email template |
-| PUT    | `/email/:id`    | Update existing template  |
-| DELETE | `/email/:id`    | Delete template           |
-| GET    | `/lectures`     | List lectures             |
-| POST   | `/lectures`     | Create a lecture          |
-| PUT    | `/lectures/:id` | Update a lecture          |
-| DELETE | `/lectures/:id` | Delete a lecture          |
+#### Email Templates
+| Method | Route                   | Description                       |
+| ------ | ----------------------- | --------------------------------- |
+| GET    | `/email`                | List all email templates          |
+| POST   | `/email`                | Create a new email template       |
+| GET    | `/email/:key`           | Retrieve a template by its key    |
+| PUT    | `/email/:key`           | Update an existing template       |
+| DELETE | `/email/:key`           | Delete a template by its key      |
+
+#### Lectures
+| Method | Route                     | Description                                               |
+| ------ | ------------------------- | --------------------------------------------------------- |
+| POST   | `/lectures`               | Create lecture (extracts YouTube ID internally)           |
+| GET    | `/lectures`               | List all lectures with populated creator details          |
+| GET    | `/lectures/:id`           | Retrieve one lecture by MongoDB ID                        |
+| PUT    | `/lectures/:id`           | Update lecture; re-validates YouTube URL if changed       |
+| DELETE | `/lectures/:id`           | Delete a lecture by its ID                                |
 
 > **Note:** All protected routes require an `Authorization: Bearer <token>` header.
 
@@ -225,7 +256,7 @@ The server will be available at `http://localhost:4000` (or your specified `PORT
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributinggit 
 
 1. Fork the repo
 2. Create a feature branch: `git checkout -b feature/your-feature`
@@ -237,11 +268,13 @@ The server will be available at `http://localhost:4000` (or your specified `PORT
 
 
 
+
 This repository provides the backend for VPN Academy, built with Node.js, Express, MongoDB, and Mongoose. It implements:
 
 - **User authentication** (login with JWT)
 - **Password reset flow** (request reset & perform reset via JWT)
 - **Email templating** for registration and password-reset emails
+- **Lecture management** (CRUD for video lectures with YouTube integration)
 
 ---
 
