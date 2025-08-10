@@ -18,8 +18,8 @@ export const createLecture = async (req, res) => {
     const newLecture = {
       title,
       description,
-      videoUrl,
-      youtubeId,
+      thumbnailUrl,
+      videoLinks,
       category,
       duration,
       tags,

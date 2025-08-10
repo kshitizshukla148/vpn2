@@ -9,6 +9,9 @@ import lectureRoutes from './routes/lecture.routes.js';
 import logsRoutes from './routes/login.routes.js';
 import mailServerRoutes from './routes/mail.server.routes.js';
 import registerRoutes from './routes/register.routes.js'; // Assuming you have a register route
+import paymentRoutes from "./routes/payment.routes.js";
+import { handleWebhook } from "./controllers/payment.controller.js";
+import { notFound, errorHandler } from './middleweare/error.middleware.js';
 
 
 
@@ -40,7 +43,22 @@ app.use('/',mailServerRoutes);
 
 app.use('/admin', adminRoutes);
 
+// Webhook endpoint must receive raw body. Mount it BEFORE express.json for that path.
+app.post("/payments/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
+  // call handler
+  handleWebhook(req, res).catch(next);
+});
+
+// mount other routes (which use express.json)
+app.use("/payments", paymentRoutes);
+
 
 app.use('/', emailRoutes);       // Email template management
+
+// 404 handler (after all routes)
+app.use(notFound);
+
+// final error handler (after everything)
+app.use(errorHandler);
 
 export default app;
