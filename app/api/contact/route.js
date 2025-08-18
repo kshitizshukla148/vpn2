@@ -28,7 +28,7 @@ export async function POST(request) {
     await addDoc(collection(db, 'contacts'), contactData);
 
     // Send email notification to admin
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
