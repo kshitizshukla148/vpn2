@@ -165,6 +165,7 @@ export async function POST(request) {
             credits: referredBy ? 10 : 0, // Give bonus credits if referred
             role: 'student',
             isVerified: true, // Mark as verified since OTP was confirmed
+            verifiedAt: new Date(), // ← This one line
             createdAt: new Date(),
             enrolledCourses: [],
             completedCourses: [],
