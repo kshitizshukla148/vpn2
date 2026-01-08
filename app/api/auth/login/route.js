@@ -870,7 +870,7 @@ export async function POST(request) {
     });
 
     // Set httpOnly cookie
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set('auth-token', customToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m, motion } from 'framer-motion';
 import { Moon, Sun, Menu, X, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/theme-provider';
 import { useAuth } from '@/components/auth-provider';
+import Image from "next/image";
+
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,13 +44,35 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo
           <Link href="/" className="flex items-center space-x-2">
             <GraduationCap className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+             <Image
+                src="/logo.jpeg"
+                alt="VPN Academy Logo"
+                width={120}
+                height={120}
+                className="h-12 w-auto"
+              /> */}
+              {/* Logo */}
+              <Link href="/" className="flex items-center space-x-2">
+                <Image
+                  src="/logo.jpeg"  // change to your image name
+                  alt="VPN Academy Logo"
+                  width={40}
+                  height={40}
+                  className="h-10 w-auto"
+                />
+                <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                  VPN Academy
+                </span>
+              </Link>
+
+            
+            {/* <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
               VPN Academy
             </span>
-          </Link>
+          </Link> */}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
@@ -94,7 +118,7 @@ export default function Navbar() {
                   <Button variant="ghost">Login</Button>
                 </Link>
                 <Link href="/auth/register">
-                  <Button>Get Started</Button>
+                  <Button >Get Started</Button>
                 </Link>
               </div>
             )}

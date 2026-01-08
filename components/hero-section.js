@@ -13,7 +13,7 @@ export default function HeroSection() {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+    <section className="relative min-h-screen pt-20 flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -36,7 +36,9 @@ export default function HeroSection() {
               transition={{ delay: 0.2 }}
             >
               <Star className="w-4 h-4" />
-              <span>India&apos;s #1 Course Platform</span>
+             <span className="text-xs tracking-wide">
+                India’s Trusted Learning Platform
+                </span>
             </motion.div>
 
             <motion.h1
