@@ -1470,6 +1470,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/components/auth-provider';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -1541,72 +1543,129 @@ export default function LoginPage() {
     }
   }, [turnstileLoaded, turnstileToken]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    if (!email || !password) {
-      toast.error('Please fill in all fields');
-      return;
-    }
+  //   if (!email || !password) {
+  //     toast.error('Please fill in all fields');
+  //     return;
+  //   }
 
-    if (!turnstileToken) {
-      toast.error('Please complete the verification');
-      return;
-    }
+  //   if (!turnstileToken) {
+  //     toast.error('Please complete the verification');
+  //     return;
+  //   }
 
-    setIsLoading(true);
+  //   setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          turnstileToken,
-        }),
-      });
+  //   try {
+  //     const response = await fetch('/api/auth/login', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         email,
+  //         password,
+  //         turnstileToken,
+  //       }),
+  //     });
 
-      const data = await response.json();
-      console.log('Login API response:', data);
+  //     const data = await response.json();
+  //     console.log('Login API response:', data);
 
-      if (response.ok) {
-        if (!data.user || !data.token) {
-          throw new Error('Invalid response data');
-        }
+  //     if (response.ok) {
+  //       if (!data.user || !data.token) {
+  //         throw new Error('Invalid response data');
+  //       }
 
-        console.log('Login successful, calling login function...');
-        toast.success('Login successful!');
+  //       console.log('Login successful, calling login function...');
+  //       toast.success('Login successful!');
 
-        // Call login function from auth provider
-        const loginSuccess = await login(data.user, data.token);
+  //       // Call login function from auth provider
+  //       const loginSuccess = await login(data.user, data.token);
         
-        if (!loginSuccess) {
-          throw new Error('Failed to set authentication state');
-        }
+  //       if (!loginSuccess) {
+  //         throw new Error('Failed to set authentication state');
+  //       }
 
-      } else {
-        toast.error(data.message || 'Login failed');
-        // Reset Turnstile on error
-        if (window.turnstile) {
-          window.turnstile.reset('.cf-turnstile');
-          setTurnstileToken('');
-        }
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error('Something went wrong. Please try again.');
-      // Reset Turnstile on error
-      if (window.turnstile) {
-        window.turnstile.reset('.cf-turnstile');
-        setTurnstileToken('');
-      }
-    } finally {
+  //     } else {
+  //       toast.error(data.message || 'Login failed');
+  //       // Reset Turnstile on error
+  //       if (window.turnstile) {
+  //         window.turnstile.reset('.cf-turnstile');
+  //         setTurnstileToken('');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Login error:', error);
+  //     toast.error('Something went wrong. Please try again.');
+  //     // Reset Turnstile on error
+  //     if (window.turnstile) {
+  //       window.turnstile.reset('.cf-turnstile');
+  //       setTurnstileToken('');
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
+ 
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!email || !password) {
+    toast.error("Please fill in all fields");
+    return;
+  }
+
+  if (!turnstileToken) {
+    toast.error("Please complete the verification");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    // Firebase client login
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCred.user;
+
+    if (!user.emailVerified) {
+      toast.error("Please verify your email before logging in.");
       setIsLoading(false);
+      return;
     }
-  };
+
+    // Save user in your auth provider
+    await login(
+      {
+        id: user.uid,
+        email: user.email,
+        fullName: user.displayName || "",
+        role: "student", // TEMP ROLE (we can load real role next)
+      },
+      "client-auth"
+    );
+
+    toast.success("Login successful!");
+    router.replace("/dashboard");
+
+  } catch (error) {
+    console.error("Login error:", error);
+    toast.error("Invalid email or password.");
+
+    if (window.turnstile) {
+      window.turnstile.reset(".cf-turnstile");
+      setTurnstileToken("");
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   // Show loading if user is already authenticated
   if (user) {
